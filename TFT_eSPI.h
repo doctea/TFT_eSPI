@@ -69,7 +69,7 @@
 #include <User_Setup_Select.h>
 
 // Handle FLASH based storage e.g. PROGMEM
-#if defined(ARDUINO_ARCH_RP2040)
+#if defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350) 
   #undef pgm_read_byte
   #define pgm_read_byte(addr)   (*(const unsigned char *)(addr))
   #undef pgm_read_word
@@ -103,7 +103,7 @@
   #include "Processors/TFT_eSPI_ESP8266.h"
 #elif defined (STM32)
   #include "Processors/TFT_eSPI_STM32.h"
-#elif defined(ARDUINO_ARCH_RP2040)
+#elif defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350) 
   #include "Processors/TFT_eSPI_RP2040.h"
 #else
   #include "Processors/TFT_eSPI_Generic.h"

@@ -14,7 +14,7 @@
 #ifdef ARDUINO_ARCH_ESP8266
 // ESP8266
 #include <ESP8266WiFi.h>
-#elif (defined(ARDUINO_ARCH_MBED) || defined(ARDUINO_ARCH_RP2040)) && !defined(ARDUINO_RASPBERRY_PI_PICO_W)
+#elif (defined(ARDUINO_ARCH_MBED) || defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350)) && !defined(ARDUINO_RASPBERRY_PI_PICO_W)
 // RP2040 Nano Connect
 #include <WiFiNINA.h>
 #else
@@ -148,7 +148,7 @@ void syncTime(void)
 
     while (WiFi.status() != WL_CONNECTED) {
       Serial.print(".");
-      #if defined(ARDUINO_ARCH_MBED) || defined(ARDUINO_ARCH_RP2040)
+      #if defined(ARDUINO_ARCH_MBED) || defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350) 
       if (WiFi.status() != WL_CONNECTED) WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
       #endif
       delay(500);

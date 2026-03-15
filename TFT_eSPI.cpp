@@ -27,7 +27,7 @@
   #include "Processors/TFT_eSPI_ESP8266.c"
 #elif defined (STM32) // (_VARIANT_ARDUINO_STM32_) stm32_def.h
   #include "Processors/TFT_eSPI_STM32.c"
-#elif defined (ARDUINO_ARCH_RP2040)  || defined (ARDUINO_ARCH_MBED) // Raspberry Pi Pico
+#elif defined (ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350) || defined (ARDUINO_ARCH_MBED) // Raspberry Pi Pico
   #include "Processors/TFT_eSPI_RP2040.c"
 #else
   #include "Processors/TFT_eSPI_Generic.c"
@@ -548,7 +548,7 @@ void TFT_eSPI::initBus(void) {
 #endif
 
 // In parallel mode and with the RP2040 processor, the TFT_WR line is handled in the  PIO
-#if defined (TFT_WR) && !defined (ARDUINO_ARCH_RP2040) && !defined (ARDUINO_ARCH_MBED)
+#if defined (TFT_WR) && !defined (ARDUINO_ARCH_RP2040) && !defined (ARDUINO_ARCH_MBED) && !defined (ARDUINO_ARCH_RP2350)
   if (TFT_WR >= 0) {
     pinMode(TFT_WR, OUTPUT);
     digitalWrite(TFT_WR, HIGH); // Set write strobe high (inactive)
@@ -577,7 +577,7 @@ void TFT_eSPI::initBus(void) {
     digitalWrite(TFT_RD, HIGH);
   }
 
-  #if  !defined (ARDUINO_ARCH_RP2040)  && !defined (ARDUINO_ARCH_MBED)// PIO manages pins
+  #if  !defined (ARDUINO_ARCH_RP2040) && !defined(ARDUINO_ARCH_RP2350) && !defined (ARDUINO_ARCH_MBED)// PIO manages pins
     // Set TFT data bus lines to output
     pinMode(TFT_D0, OUTPUT); digitalWrite(TFT_D0, HIGH);
     pinMode(TFT_D1, OUTPUT); digitalWrite(TFT_D1, HIGH);
@@ -3405,7 +3405,7 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
   DC_C; tft_Write_8(TFT_RAMWR);
   DC_D;
   // Temporary solution is to include the RP2040 code here
-  #if (defined(ARDUINO_ARCH_RP2040)  || defined (ARDUINO_ARCH_MBED)) && !defined(RP2040_PIO_INTERFACE)
+  #if (defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350) || defined (ARDUINO_ARCH_MBED)) && !defined(RP2040_PIO_INTERFACE)
     // For ILI9225 and RP2040 the slower Arduino SPI transfer calls were used, so need to swap back to 16-bit mode
     while (spi_get_hw(SPI_X)->sr & SPI_SSPSR_BSY_BITS) {};
     hw_write_masked(&spi_get_hw(SPI_X)->cr0, (16 - 1) << SPI_SSPCR0_DSS_LSB, SPI_SSPCR0_DSS_BITS);
@@ -3435,7 +3435,7 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
   #endif
 
   // Temporary solution is to include the RP2040 optimised code here
-  #if (defined(ARDUINO_ARCH_RP2040)  || defined (ARDUINO_ARCH_MBED))
+  #if (defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350) || defined (ARDUINO_ARCH_MBED))
     #if !defined(RP2040_PIO_INTERFACE)
       // Use hardware SPI port, this code does not swap from 8 to 16-bit
       // to avoid the spi_set_format() call overhead
@@ -3539,7 +3539,7 @@ void TFT_eSPI::readAddrWindow(int32_t xs, int32_t ys, int32_t w, int32_t h)
 #endif
 
   // Temporary solution is to include the RP2040 optimised code here
-#if (defined(ARDUINO_ARCH_RP2040)  || defined (ARDUINO_ARCH_MBED)) && !defined(RP2040_PIO_INTERFACE)
+#if (defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350) || defined (ARDUINO_ARCH_MBED)) && !defined(RP2040_PIO_INTERFACE)
   // Use hardware SPI port, this code does not swap from 8 to 16-bit
   // to avoid the spi_set_format() call overhead
   while (spi_get_hw(SPI_X)->sr & SPI_SSPSR_BSY_BITS) {};
@@ -3654,7 +3654,7 @@ void TFT_eSPI::drawPixel(int32_t x, int32_t y, uint32_t color)
   #endif
 
 // Temporary solution is to include the RP2040 optimised code here
-#elif (defined (ARDUINO_ARCH_RP2040) || defined (ARDUINO_ARCH_MBED)) && !defined (SSD1351_DRIVER)
+#elif (defined (ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_RP2350) || defined (ARDUINO_ARCH_MBED)) && !defined (SSD1351_DRIVER)
 
   #if defined (SSD1963_DRIVER)
     if ((rotation & 0x1) == 0) { transpose(x, y); }
